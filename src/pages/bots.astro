@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BotCard from '../components/BotCard.astro';
+import { getBots, getYears } from '../lib/content';
+
+const bots = await getBots();
+const years = await getYears();
+const yearTitle = (id: string) => {
+  const y = years.find((y) => y.id === id);
+  return y ? `${y.data.hebrewYear} – ${y.data.title}` : id;
+};
+---
+<BaseLayout title="בוטים" description="הבוטים השנתיים של השקפה ואיך משתמשים בהם">
+  <h1>בוטים</h1>
+  <p>כל שנה נבנה בוט שעוזר לתכנן שיעור ברוח הנושא השנתי. הבוטים פועלים בג'מיני, ונפתחים בחלון חדש.</p>
+  {bots.map((b) => <BotCard bot={b} yearTitle={yearTitle(b.data.year)} />)}
+</BaseLayout>

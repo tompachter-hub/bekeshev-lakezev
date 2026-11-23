@@ -1,0 +1,113 @@
+---
+import '@fontsource/heebo/400.css';
+import '@fontsource/heebo/700.css';
+import '../styles/global.css';
+import { site } from '../site.config';
+import { url } from '../lib/content';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = site.tagline } = Astro.props;
+const fullTitle = title ? `${title} | ${site.name}` : site.name;
+
+const nav = [
+  { href: '', label: 'בית' },
+  { href: 'year', label: 'השנה' },
+  { href: 'toolbox', label: 'ארגז כלים' },
+  { href: 'library', label: 'ספריית העשרה' },
+  { href: 'bots', label: 'בוטים' },
+  { href: 'archive', label: 'ארכיון' },
+];
+const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '').replace(/^\/|\/$/g, '');
+const isActive = (href: string) =>
+  href === '' ? current === '' : current === href || current.startsWith(href + '/');
+---
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="he_IL" />
+    <meta name="theme-color" content="#faf6ee" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">דלג לתוכן</a>
+    <header class="site-header">
+      <div class="container">
+        <a class="site-name" href={url('')}>{site.name}</a>
+      </div>
+      <nav aria-label="ניווט ראשי">
+        <ul class="container">
+          {nav.map((n) => (
+            <li>
+              <a href={url(n.href)} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+    <main id="main" class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p class="footer-line">{site.footerLine}</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .site-name {
+    display: block;
+    padding: 0.75rem 0 0.25rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  nav ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding-block: 0.25rem 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav a {
+    display: block;
+    white-space: nowrap;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--text);
+    min-height: 44px;
+    line-height: 1.8;
+  }
+  nav a[aria-current='page'] {
+    background: var(--accent);
+    color: #fff;
+  }
+  main { padding-bottom: 3rem; min-height: 60vh; }
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 0;
+    text-align: center;
+  }
+  .footer-line { margin: 0; letter-spacing: 0.04em; color: var(--muted); }
+</style>

@@ -1,0 +1,72 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ItemCard from '../../components/ItemCard.astro';
+import CopyButton from '../../components/CopyButton.astro';
+import { getMeetings, getItems, getYears, url, formatDate, type Meeting } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const meetings = await getMeetings();
+  return meetings.map((meeting) => ({ params: { id: meeting.id }, props: { meeting } }));
+}
+const { meeting } = Astro.props as { meeting: Meeting };
+const d = meeting.data;
+const { Content } = await render(meeting);
+const items = (await getItems()).filter((i) => i.data.meeting === meeting.id);
+const year = (await getYears()).find((y) => y.id === d.year);
+---
+<BaseLayout title={d.title} description={d.summary}>
+  <p class="meta">
+    <a href={url(`years/${d.year}`)}>{year?.data.title ?? d.year}</a> ·
+    מפגש {d.number} · <time datetime={d.date.toISOString().slice(0, 10)}>{formatDate(d.date)}</time>
+    {d.draft && <span class="draft-badge">טיוטה – לא מוצג באתר החי</span>}
+  </p>
+  <h1>{d.title}</h1>
+  <p><strong>{d.summary}</strong></p>
+
+  {d.nextTask && (
+    <section class="highlight" aria-labelledby="task-h">
+      <h2 id="task-h">המשימה למפגש הבא</h2>
+      <p>{d.nextTask}</p>
+    </section>
+  )}
+
+  <article class="meeting-body">
+    <Content />
+  </article>
+
+  {d.photos.length > 0 && (
+    <section aria-labelledby="photos-h">
+      <h2 id="photos-h">תמונות מהמפגש</h2>
+      {d.photos.map((p) => (
+        <figure>
+          <img src={url(p.src)} alt={p.alt} loading="lazy" />
+        </figure>
+      ))}
+    </section>
+  )}
+
+  {items.length > 0 && (
+    <section aria-labelledby="items-h">
+      <h2 id="items-h">פריטים מהמפגש</h2>
+      {items.map((i) => <ItemCard item={i} />)}
+    </section>
+  )}
+
+  {d.whatsapp && (
+    <section class="card" aria-labelledby="wa-h">
+      <h2 id="wa-h">הודעה לקבוצת הוואטסאפ</h2>
+      <p class="wa-text">{d.whatsapp}</p>
+      <p class="wa-text">{`לדף המפגש: ${Astro.site ? new URL(url(`meetings/${meeting.id}`), Astro.site).href : ''}`}</p>
+      <CopyButton
+        text={`${d.whatsapp}\n\nלדף המפגש: ${Astro.site ? new URL(url(`meetings/${meeting.id}`), Astro.site).href : ''}`}
+        label="העתקת ההודעה"
+      />
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .wa-text { white-space: pre-line; margin: 0.4rem 0; }
+  figure { margin: 1rem 0; }
+</style>

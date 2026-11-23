@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getItems, getMeetings, getYears, url, type Item } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const items = await getItems();
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+const { item } = Astro.props as { item: Item };
+const d = item.data;
+const { Content } = await render(item);
+const meeting = d.meeting ? (await getMeetings()).find((m) => m.id === d.meeting) : undefined;
+const year = (await getYears()).find((y) => y.id === d.year);
+---
+<BaseLayout title={d.title} description={d.summary}>
+  <p class="meta">
+    <span class="tag">{d.kind}</span>
+    {d.ritualType && <span class="tag">{d.ritualType}</span>}
+    {d.draft && <span class="draft-badge">טיוטה – לא מוצג באתר החי</span>}
+  </p>
+  <h1>{d.title}</h1>
+  {d.summary && <p><strong>{d.summary}</strong></p>}
+  {d.whyRead && <p class="highlight"><strong>למה כדאי לקרוא:</strong> {d.whyRead}</p>}
+
+  <Content />
+
+  <div class="btn-row">
+    {d.url && <a class="btn" href={d.url} target="_blank" rel="noopener">לקישור</a>}
+    {d.file && <a class="btn" href={url(d.file)} download>הורדת הקובץ</a>}
+  </div>
+
+  <p class="meta">
+    {year && <>מתוך <a href={url(`years/${d.year}`)}>{year.data.title}</a></>}
+    {meeting && <> · עלה ב<a href={url(`meetings/${meeting.id}`)}>מפגש {meeting.data.number}: {meeting.data.title}</a></>}
+  </p>
+  <p><a href={url('toolbox')}>חזרה לארגז הכלים</a></p>
+</BaseLayout>

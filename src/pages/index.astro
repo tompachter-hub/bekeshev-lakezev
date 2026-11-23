@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MeetingCard from '../components/MeetingCard.astro';
+import { site } from '../site.config';
+import { getCurrentYear, getMeetings, getBots, url } from '../lib/content';
+
+const year = await getCurrentYear();
+const meetings = year ? await getMeetings(year.id) : [];
+const latest = meetings[0];
+const bots = (await getBots()).filter((b) => b.data.year === year?.id);
+---
+<BaseLayout>
+  <h1>{site.name}</h1>
+  <p class="meta">{site.tagline}</p>
+
+  {latest?.data.nextTask && (
+    <section class="highlight" aria-labelledby="task-h">
+      <h2 id="task-h">המשימה עד המפגש הבא</h2>
+      <p>{latest.data.nextTask}</p>
+    </section>
+  )}
+
+  <section aria-labelledby="latest-h">
+    <h2 id="latest-h">המפגש האחרון</h2>
+    {latest ? <MeetingCard meeting={latest} /> : <p class="empty">עדיין אין מפגשים מתועדים.</p>}
+    <p><a href={url('year')}>כל המפגשים של השנה</a></p>
+  </section>
+
+  <section aria-labelledby="bots-h">
+    <h2 id="bots-h">הבוטים של השנה</h2>
+    <div class="btn-row">
+      {bots.map((b) =>
+        b.data.url ? (
+          <a class="btn" href={b.data.url} target="_blank" rel="noopener">{b.data.name}</a>
+        ) : (
+          <a class="btn" href={url('bots')}>{b.data.name}</a>
+        ),
+      )}
+      <a class="btn" href={url('bots')}>כל הבוטים</a>
+    </div>
+  </section>
+</BaseLayout>

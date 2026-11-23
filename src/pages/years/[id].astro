@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import YearView from '../../components/YearView.astro';
+import { getYears, type Year } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const years = await getYears();
+  return years.map((year) => ({ params: { id: year.id }, props: { year } }));
+}
+const { year } = Astro.props as { year: Year };
+---
+<BaseLayout title={year.data.title}>
+  <YearView year={year} />
+</BaseLayout>

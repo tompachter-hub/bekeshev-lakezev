@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getYears, getMeetings, url } from '../lib/content';
+
+const years = (await getYears()).filter((y) => !y.data.current);
+const counts = await Promise.all(years.map(async (y) => (await getMeetings(y.id)).length));
+---
+<BaseLayout title="ארכיון" description="החומרים של השנים הקודמות במהלך השקפה">
+  <h1>ארכיון</h1>
+  <p>מה שנעשה בשנים הקודמות של השקפה, באותו מבנה של שנה ומפגשים.</p>
+  {years.length ? (
+    <ul class="plain">
+      {years.map((y, i) => (
+        <li>
+          <a class="card-link" href={url(`years/${y.id}`)}>
+            <article class="card">
+              <p class="meta">{y.data.hebrewYear} · {counts[i] ? `${counts[i]} מפגשים` : 'החומרים יועברו בהמשך'}</p>
+              <h3>{y.data.title}</h3>
+              {y.data.description && <p>{y.data.description}</p>}
+            </article>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="empty">הארכיון בהקמה.</p>
+  )}
+</BaseLayout>

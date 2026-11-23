@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ItemCard from '../components/ItemCard.astro';
+import { KINDS, RITUAL_TYPES } from '../content.config';
+import { getItems, getYears } from '../lib/content';
+
+const items = await getItems();
+const years = await getYears();
+---
+<BaseLayout title="ארגז כלים" description="מהלכים, ריווחים, כלים ותוצרים מכל השנים">
+  <h1>ארגז כלים</h1>
+  <p>כל המהלכים, הריווחים, הכלים והתוצרים מכל השנים. אפשר לסנן לפי סוג, שנה וסוג ריווח.</p>
+
+  <form class="filters" aria-label="סינון פריטים" onsubmit="return false">
+    <label>
+      סוג
+      <select name="kind">
+        <option value="">הכול</option>
+        {KINDS.map((k) => <option value={k}>{k}</option>)}
+      </select>
+    </label>
+    <label>
+      שנה
+      <select name="year">
+        <option value="">הכול</option>
+        {years.map((y) => <option value={y.id}>{y.data.hebrewYear} – {y.data.title}</option>)}
+      </select>
+    </label>
+    <label>
+      סוג ריווח
+      <select name="ritual">
+        <option value="">הכול</option>
+        {RITUAL_TYPES.map((r) => <option value={r}>{r}</option>)}
+      </select>
+    </label>
+  </form>
+
+  <p class="meta" id="result-count" role="status" aria-live="polite">{items.length} פריטים</p>
+
+  <div id="items">
+    {items.map((i) => <ItemCard item={i} />)}
+  </div>
+  <p class="empty" id="no-results" hidden={items.length > 0}>
+    {items.length ? 'אין פריטים שמתאימים לסינון.' : 'הפריטים יתווספו בקרוב.'}
+  </p>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.filters')!;
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.item-card'));
+  const count = document.getElementById('result-count')!;
+  const empty = document.getElementById('no-results')!;
+
+  function apply() {
+    const f = new FormData(form);
+    const kind = f.get('kind') as string;
+    const year = f.get('year') as string;
+    const ritual = f.get('ritual') as string;
+    let shown = 0;
+    for (const c of cards) {
+      const match =
+        (!kind || c.dataset.kind === kind) &&
+        (!year || c.dataset.year === year) &&
+        (!ritual || c.dataset.ritual === ritual);
+      c.hidden = !match;
+      if (match) shown++;
+    }
+    count.textContent = `${shown} פריטים`;
+    if (cards.length) {
+      empty.textContent = 'אין פריטים שמתאימים לסינון.';
+      empty.hidden = shown > 0;
+    }
+  }
+  form.addEventListener('change', apply);
+</script>
+
+<style>
+  .filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+    margin: 1rem 0;
+  }
+  @media (min-width: 640px) {
+    .filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  label { display: flex; flex-direction: column; font-weight: 700; font-size: 0.95rem; min-width: 0; }
+  select {
+    width: 100%;
+    max-width: 100%;
+    font: inherit;
+    font-weight: 400;
+    min-height: 44px;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    margin-top: 0.25rem;
+  }
+</style>

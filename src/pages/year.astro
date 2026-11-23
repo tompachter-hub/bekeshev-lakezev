@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import YearView from '../components/YearView.astro';
+import { getCurrentYear } from '../lib/content';
+
+const year = await getCurrentYear();
+---
+<BaseLayout title={year?.data.title ?? 'השנה'}>
+  {year ? <YearView year={year} /> : <p class="empty">עוד לא הוגדרה שנה.</p>}
+</BaseLayout>

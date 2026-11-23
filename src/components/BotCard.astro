@@ -1,0 +1,27 @@
+---
+import type { Bot } from '../lib/content';
+interface Props { bot: Bot; yearTitle?: string; }
+const { bot, yearTitle } = Astro.props;
+const d = bot.data;
+---
+<article class="card">
+  {yearTitle && <p class="meta">{yearTitle}</p>}
+  <h3>{d.name}</h3>
+  <p>{d.howTo}</p>
+  <p>
+    {d.url ? (
+      <a class="btn" href={d.url} target="_blank" rel="noopener">
+        פתיחת הבוט<span class="visually-hidden"> (נפתח בחלון חדש)</span>
+      </a>
+    ) : (
+      <span class="btn" aria-disabled="true">הקישור יתווסף בקרוב</span>
+    )}
+  </p>
+</article>
+
+<style>
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+</style>

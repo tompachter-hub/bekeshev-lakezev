@@ -1,0 +1,24 @@
+---
+import { url, type Item } from '../lib/content';
+interface Props { item: Item; }
+const { item } = Astro.props;
+const d = item.data;
+---
+<a
+  class="card-link item-card"
+  href={url(`items/${item.id}`)}
+  data-kind={d.kind}
+  data-year={d.year}
+  data-ritual={d.ritualType ?? ''}
+>
+  <article class="card">
+    <p class="meta">
+      <span class="tag">{d.kind}</span>
+      {d.ritualType && <span class="tag">{d.ritualType}</span>}
+      {d.draft && <span class="draft-badge">טיוטה</span>}
+    </p>
+    <h3>{d.title}</h3>
+    {d.summary && <p>{d.summary}</p>}
+    {d.whyRead && <p><strong>למה כדאי לקרוא:</strong> {d.whyRead}</p>}
+  </article>
+</a>

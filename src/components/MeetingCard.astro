@@ -1,0 +1,16 @@
+---
+import { url, formatDate, type Meeting } from '../lib/content';
+interface Props { meeting: Meeting; }
+const { meeting } = Astro.props;
+const d = meeting.data;
+---
+<a class="card-link" href={url(`meetings/${meeting.id}`)}>
+  <article class="card">
+    <p class="meta">
+      מפגש {d.number} · <time datetime={d.date.toISOString().slice(0, 10)}>{formatDate(d.date)}</time>
+      {d.draft && <span class="draft-badge">טיוטה</span>}
+    </p>
+    <h3>{d.title}</h3>
+    <p>{d.summary}</p>
+  </article>
+</a>

@@ -1,0 +1,19 @@
+---
+import MeetingCard from './MeetingCard.astro';
+import { getMeetings, type Year } from '../lib/content';
+interface Props { year: Year; }
+const { year } = Astro.props;
+const meetings = (await getMeetings(year.id)).reverse(); // מהראשון לאחרון
+---
+<p class="meta">{year.data.hebrewYear}{year.data.current ? ' · השנה' : ''}</p>
+<h1>{year.data.title}</h1>
+{year.data.description && <p>{year.data.description}</p>}
+
+<h2>המפגשים</h2>
+{meetings.length ? (
+  <ol class="plain">
+    {meetings.map((m) => <li><MeetingCard meeting={m} /></li>)}
+  </ol>
+) : (
+  <p class="empty">המפגשים של השנה הזו עוד לא הועלו למאגר.</p>
+)}
