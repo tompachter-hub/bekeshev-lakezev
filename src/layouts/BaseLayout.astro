@@ -108,23 +108,30 @@ const isActive = (href: string) =>
   .site-sub { margin: 0.1rem 0 0; font-size: 0.85rem; color: var(--muted); }
   nav ul {
     display: flex;
-    gap: 0.25rem;
+    flex-wrap: wrap;
+    gap: 0.2rem;
     list-style: none;
     margin: 0;
     padding-block: 0.35rem 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
   nav a {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     white-space: nowrap;
-    padding: 0.4rem 0.8rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 999px;
     text-decoration: none;
     color: var(--text);
-    min-height: 44px;
+    min-height: 38px;
+    font-size: 0.95rem;
+  }
+  @media (min-width: 900px) {
+    nav a { padding: 0.4rem 0.8rem; min-height: 44px; font-size: 1rem; }
+  }
+  /* בטלפון התפריט תופס כמה שורות, ולכן הכותרת לא נדבקת לראש המסך */
+  @media (max-width: 699px) {
+    .site-header { position: static; }
   }
   nav a:hover { background: var(--accent-soft); }
   nav a[aria-current='page'] { background: var(--accent); color: #fff; }
