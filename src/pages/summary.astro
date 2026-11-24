@@ -13,7 +13,7 @@ const ordered = years
 const rendered = await Promise.all(ordered.map(async (x) => ({ ...x, Content: (await render(x.summary!)).Content })));
 ---
 <BaseLayout title="סיכום שנתי" description="עבודת הסיכום השנתית של קהילת בקשב לקצב">
-  <PageHero title="סיכום שנתי" subtitle="עבודת הסיכום של הקהילה, שנה אחרי שנה" image="fern" />
+  <PageHero title="סיכום שנתי" subtitle="מטלת הסיכום השנתית: ההנחיות ומה מגישות" image="fern" />
 
   {rendered.length ? (
     rendered.map(({ year, summary, Content }) => (
@@ -23,7 +23,7 @@ const rendered = await Promise.all(ordered.map(async (x) => ({ ...x, Content: (a
         {summary!.data.draft && <span class="draft-badge">טיוטה – לא מוצג באתר החי</span>}
         <Content />
         {summary!.data.file && (
-          <p><a class="btn" href={url(summary!.data.file)} download><Download size={18} aria-hidden="true" /> הורדת עבודת הסיכום</a></p>
+          <p><a class="btn" href={url(summary!.data.file)} download><Download size={18} aria-hidden="true" /> {summary!.data.fileLabel ?? 'הורדת עבודת הסיכום'}</a></p>
         )}
       </article>
     ))

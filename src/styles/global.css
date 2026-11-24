@@ -176,3 +176,11 @@ img { max-width: 100%; height: auto; border-radius: var(--radius); }
 }
 
 ul.plain { list-style: none; padding: 0; margin: 0; }
+
+/* טבלאות וציטוטים בתוכן */
+.table-wrap, main table { width: 100%; }
+main table { border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; display: block; overflow-x: auto; }
+main th, main td { border: 1px solid var(--border); padding: 0.5rem 0.65rem; text-align: start; vertical-align: top; }
+main th { background: var(--accent-soft); }
+main blockquote { margin: 1rem 0; padding: 0.75rem 1rem; background: var(--accent-soft); border-inline-start: 4px solid var(--accent); border-radius: var(--radius); }
+main blockquote p { margin: 0; }

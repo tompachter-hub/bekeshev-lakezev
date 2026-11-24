@@ -106,6 +106,7 @@ const summaries = defineCollection({
     year: z.string(),
     title: z.string(),
     file: z.string().optional(), // קובץ להורדה, למשל media/summary-tashpaz.pdf
+    fileLabel: z.string().optional(), // הטקסט על כפתור ההורדה
     draft: z.boolean().default(false),
   }),
 });
