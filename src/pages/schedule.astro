@@ -1,0 +1,85 @@
+---
+import { Clock, MapPin } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import NextMeeting from '../components/NextMeeting.astro';
+import { getCurrentYear, getSchedule, getMeetings, isoDate, url } from '../lib/content';
+
+const year = await getCurrentYear();
+const sessions = year ? await getSchedule(year.id) : [];
+const meetings = year ? await getMeetings(year.id) : [];
+const meetingOn = (d: Date) => meetings.find((m) => isoDate(m.data.date) === isoDate(d));
+---
+<BaseLayout title="לוח מפגשים" description="מתי נפגשות – מועדי המפגשים של הקהילה השנה">
+  <PageHero title="לוח מפגשים" subtitle={year ? `מתי נפגשות – ${year.data.hebrewYear}` : 'מתי נפגשות'} image="path" />
+
+  {year && <NextMeeting yearId={year.id} showLink={false} />}
+
+  <h2>כל המפגשים השנה</h2>
+  {sessions.length ? (
+    <ol class="plain sessions">
+      {sessions.map((s, i) => {
+        const m = meetingOn(s.date);
+        return (
+          <li class="session" data-date={isoDate(s.date)}>
+            <span class="date-chip" aria-hidden="true">
+              <span class="date-day">{s.date.getDate()}</span>
+              <span class="date-month">{s.date.toLocaleDateString('he-IL', { month: 'short' })}</span>
+            </span>
+            <div>
+              <p class="session-title">
+                מפגש {i + 1} · {s.date.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                <span class="past-badge">התקיים</span>
+              </p>
+              {(s.time || s.place) && (
+                <p class="meta details">
+                  {s.time && <span><Clock size={16} aria-hidden="true" /> {s.time}</span>}
+                  {s.place && <span><MapPin size={16} aria-hidden="true" /> {s.place}</span>}
+                </p>
+              )}
+              {m ? <p><a href={url(`meetings/${m.id}`)}>{m.data.title}</a></p> : s.topic && <p>{s.topic}</p>}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  ) : (
+    <p class="empty">מועדי המפגשים יפורסמו בקרוב.</p>
+  )}
+</BaseLayout>
+
+<script>
+  const today = new Date().toISOString().slice(0, 10);
+  document.querySelectorAll<HTMLElement>('.session').forEach((el) => {
+    if ((el.dataset.date ?? '') < today) el.classList.add('is-past');
+  });
+</script>
+
+<style>
+  .session {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    margin: 0.6rem 0;
+  }
+  .session p { margin: 0.15rem 0; }
+  .session-title { font-weight: 700; }
+  .details { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .details span { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .past-badge {
+    display: none;
+    font-weight: 400;
+    font-size: 0.8rem;
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 0 0.5rem;
+    margin-inline-start: 0.4rem;
+  }
+  .session.is-past { background: transparent; }
+  .session.is-past .date-chip { background: var(--muted); }
+  .session.is-past .past-badge { display: inline-block; }
+</style>

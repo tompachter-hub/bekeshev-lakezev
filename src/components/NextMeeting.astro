@@ -1,0 +1,52 @@
+---
+// מציג את המפגש הקרוב לפי התאריך של היום (נבחר בדפדפן, כדי שיתעדכן גם בלי לבנות מחדש את האתר)
+import { CalendarDays, Clock, MapPin } from '@lucide/astro';
+import { getSchedule, isoDate, url } from '../lib/content';
+interface Props { yearId: string; showLink?: boolean; }
+const { yearId, showLink = true } = Astro.props;
+const sessions = await getSchedule(yearId);
+const fmt = (d: Date) => d.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
+---
+<section class="next-meeting" aria-labelledby="next-h">
+  <h2 id="next-h" class="section-head"><CalendarDays size={22} aria-hidden="true" /> המפגש הבא</h2>
+  {sessions.map((s) => (
+    <div class="next-item" data-date={isoDate(s.date)} hidden>
+      <p class="next-date">{fmt(s.date)}</p>
+      {(s.time || s.place) && (
+        <p class="meta next-details">
+          {s.time && <span><Clock size={16} aria-hidden="true" /> {s.time}</span>}
+          {s.place && <span><MapPin size={16} aria-hidden="true" /> {s.place}</span>}
+        </p>
+      )}
+      {s.topic && <p>{s.topic}</p>}
+    </div>
+  ))}
+  <p class="next-none" hidden>המועד של המפגש הבא יפורסם בקרוב.</p>
+  {showLink && <p><a href={url('schedule')}>לכל מועדי המפגשים</a></p>}
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.next-meeting').forEach((box) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const next = Array.from(box.querySelectorAll<HTMLElement>('.next-item')).find(
+      (el) => (el.dataset.date ?? '') >= today,
+    );
+    if (next) next.hidden = false;
+    else box.querySelector<HTMLElement>('.next-none')!.hidden = false;
+  });
+</script>
+
+<style>
+  .next-meeting {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    margin: 1rem 0;
+  }
+  .next-meeting h2 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+  .next-date { font-size: 1.3rem; font-weight: 700; margin: 0.2rem 0; }
+  .next-details { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .next-details span { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .next-meeting p { margin: 0.25rem 0; }
+</style>

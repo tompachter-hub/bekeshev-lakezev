@@ -1,6 +1,8 @@
 ---
+import { School, UserRound, Sprout, ListChecks, Bot as BotIcon } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MeetingCard from '../components/MeetingCard.astro';
+import NextMeeting from '../components/NextMeeting.astro';
 import { site } from '../site.config';
 import { getCurrentYear, getMeetings, getBots, url } from '../lib/content';
 
@@ -8,35 +10,149 @@ const year = await getCurrentYear();
 const meetings = year ? await getMeetings(year.id) : [];
 const latest = meetings[0];
 const bots = (await getBots()).filter((b) => b.data.year === year?.id);
+
+const tiles = [
+  { href: 'schedule', label: 'לוח מפגשים', text: 'מתי נפגשות', image: 'path' },
+  { href: 'toolbox', label: 'ארגז כלים', text: 'ריווחים, מהלכים וכלים', image: 'seeds' },
+  { href: 'bots', label: 'בוטים', text: 'לתכנון שיעור', image: 'drop' },
+  { href: 'library', label: 'ספריית העשרה', text: 'מאמרים ומקורות', image: 'window' },
+  { href: 'summary', label: 'סיכום שנתי', text: 'עבודת הסיכום', image: 'fern' },
+  { href: 'archive', label: 'ארכיון', text: 'השנים הקודמות', image: 'bench' },
+];
 ---
 <BaseLayout>
-  <h1>{site.name}</h1>
-  <p class="meta">{site.tagline}</p>
+  <section class="hero" style={`background-image: url('${url('media/nature/stream.webp')}')`}>
+    <div class="hero-inner">
+      <p class="hero-kicker">קהילת מורות · מהלך {site.program}</p>
+      <h1>{site.name}</h1>
+      <p class="hero-motto">{site.motto}</p>
+      <ul class="plain hero-facts">
+        <li><School size={18} aria-hidden="true" /> {site.school}, {site.city}</li>
+        <li><UserRound size={18} aria-hidden="true" /> {site.leaderRole}: {site.leader}</li>
+      </ul>
+    </div>
+  </section>
+
+  {year && <NextMeeting yearId={year.id} />}
 
   {latest?.data.nextTask && (
     <section class="highlight" aria-labelledby="task-h">
-      <h2 id="task-h">המשימה עד המפגש הבא</h2>
+      <h2 id="task-h" class="section-head"><ListChecks size={20} aria-hidden="true" /> המשימה עד המפגש הבא</h2>
       <p>{latest.data.nextTask}</p>
     </section>
   )}
 
+  <nav aria-label="קיצורי דרך" class="tiles">
+    {tiles.map((t) => (
+      <a class="tile" href={url(t.href)}>
+        <img src={url(`media/nature/${t.image}.webp`)} alt="" loading="lazy" width="320" height="200" />
+        <span class="tile-label">{t.label}</span>
+        <span class="tile-text">{t.text}</span>
+      </a>
+    ))}
+  </nav>
+
   <section aria-labelledby="latest-h">
-    <h2 id="latest-h">המפגש האחרון</h2>
+    <h2 id="latest-h" class="section-head"><Sprout size={22} aria-hidden="true" /> המפגש האחרון</h2>
     {latest ? <MeetingCard meeting={latest} /> : <p class="empty">עדיין אין מפגשים מתועדים.</p>}
     <p><a href={url('year')}>כל המפגשים של השנה</a></p>
   </section>
 
-  <section aria-labelledby="bots-h">
-    <h2 id="bots-h">הבוטים של השנה</h2>
-    <div class="btn-row">
-      {bots.map((b) =>
-        b.data.url ? (
-          <a class="btn" href={b.data.url} target="_blank" rel="noopener">{b.data.name}</a>
-        ) : (
-          <a class="btn" href={url('bots')}>{b.data.name}</a>
-        ),
-      )}
-      <a class="btn" href={url('bots')}>כל הבוטים</a>
+  {bots.length > 0 && (
+    <section aria-labelledby="bots-h">
+      <h2 id="bots-h" class="section-head"><BotIcon size={22} aria-hidden="true" /> הבוט של השנה</h2>
+      <div class="btn-row">
+        {bots.map((b) =>
+          b.data.url ? (
+            <a class="btn" href={b.data.url} target="_blank" rel="noopener">{b.data.name}</a>
+          ) : (
+            <a class="btn" href={url('bots')}>{b.data.name}</a>
+          ),
+        )}
+      </div>
+    </section>
+  )}
+
+  <section class="about" aria-labelledby="about-h">
+    <img src={url('media/nature/snail.webp')} alt="" loading="lazy" width="320" height="320" />
+    <div>
+      <h2 id="about-h">על הקהילה</h2>
+      <p>{site.about}</p>
+      <p>
+        הקהילה פועלת ב{site.school} ב{site.city}, ומובילה אותה {site.leader}. המאגר הזה שומר את הידע שנוצר במפגשים – כדי
+        שנוכל לחזור אליו, ללמוד ממנו ולשתף בו, שנה אחרי שנה.
+      </p>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    margin: 1rem 0;
+    border-radius: 20px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center 60%;
+    min-height: 280px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(18, 38, 26, 0.92) 0%, rgba(18, 38, 26, 0.72) 55%, rgba(18, 38, 26, 0.35) 100%);
+  }
+  .hero-inner { position: relative; padding: 1.5rem 1.25rem 1.25rem; color: #fff; }
+  .hero h1 { color: #fff; margin: 0.2rem 0; font-size: 2rem; }
+  .hero-kicker {
+    display: inline-block;
+    margin: 0;
+    padding: 0.15rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 0.9rem;
+  }
+  .hero-motto { font-size: 1.15rem; margin: 0.3rem 0 0.8rem; }
+  .hero-facts li { display: flex; align-items: center; gap: 0.45rem; margin: 0.25rem 0; }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  @media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    padding-bottom: 0.6rem;
+  }
+  .tile:hover { border-color: var(--accent); }
+  .tile img { width: 100%; height: 110px; object-fit: cover; border-radius: 0; }
+  .tile-label { font-weight: 700; padding: 0.5rem 0.75rem 0; color: var(--accent); }
+  .tile-text { font-size: 0.875rem; color: var(--muted); padding: 0 0.75rem; }
+
+  .about {
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+    margin: 2rem 0 1rem;
+    background: var(--accent-soft);
+    border-radius: 20px;
+    padding: 1.1rem;
+  }
+  .about img { width: 100%; max-height: 220px; object-fit: cover; }
+  .about h2 { margin-top: 0; }
+  @media (min-width: 640px) {
+    .about { grid-template-columns: 1fr 2fr; }
+    .about img { max-height: none; aspect-ratio: 1; }
+  }
+</style>

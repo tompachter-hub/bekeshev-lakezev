@@ -40,6 +40,22 @@ export async function getBots() {
   return all.sort((a, b) => b.data.order - a.data.order);
 }
 
+export async function getSchedule(yearId: string) {
+  const all = await getCollection('schedule', (s) => s.data.year === yearId);
+  return all
+    .flatMap((s) => s.data.sessions)
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+export async function getSummaries() {
+  const all = await getCollection('summaries', (s) => showDrafts || !s.data.draft);
+  return all;
+}
+
+export function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
 export type Meeting = CollectionEntry<'meetings'>;
 export type Item = CollectionEntry<'items'>;
 export type Bot = CollectionEntry<'bots'>;

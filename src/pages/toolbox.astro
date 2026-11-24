@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ItemCard from '../components/ItemCard.astro';
+import PageHero from '../components/PageHero.astro';
 import { KINDS, RITUAL_TYPES } from '../content.config';
 import { getItems, getYears } from '../lib/content';
 
@@ -8,8 +9,8 @@ const items = await getItems();
 const years = await getYears();
 ---
 <BaseLayout title="ארגז כלים" description="מהלכים, ריווחים, כלים ותוצרים מכל השנים">
-  <h1>ארגז כלים</h1>
-  <p>כל המהלכים, הריווחים, הכלים והתוצרים מכל השנים. אפשר לסנן לפי סוג, שנה וסוג ריווח.</p>
+  <PageHero title="ארגז כלים" subtitle="מהלכים, ריווחים, כלים ותוצרים מכל השנים" image="seeds" />
+  <p>אפשר לסנן לפי סוג, שנה וסוג ריווח.</p>
 
   <form class="filters" aria-label="סינון פריטים" onsubmit="return false">
     <label>

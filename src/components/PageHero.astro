@@ -1,0 +1,12 @@
+---
+import { url } from '../lib/content';
+interface Props { title: string; subtitle?: string; image: string; }
+const { title, subtitle, image } = Astro.props;
+---
+<div class="page-hero">
+  <img src={url(`media/nature/${image}.webp`)} alt="" width="84" height="84" />
+  <div>
+    <h1>{title}</h1>
+    {subtitle && <p>{subtitle}</p>}
+  </div>
+</div>

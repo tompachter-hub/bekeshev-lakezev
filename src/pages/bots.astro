@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BotCard from '../components/BotCard.astro';
+import PageHero from '../components/PageHero.astro';
 import { getBots, getYears } from '../lib/content';
 
 const bots = await getBots();
@@ -11,7 +12,7 @@ const yearTitle = (id: string) => {
 };
 ---
 <BaseLayout title="בוטים" description="הבוטים השנתיים של השקפה ואיך משתמשים בהם">
-  <h1>בוטים</h1>
+  <PageHero title="בוטים" subtitle="בוט אחד לכל שנה, לתכנון שיעור" image="drop" />
   <p>כל שנה נבנה בוט שעוזר לתכנן שיעור ברוח הנושא השנתי. הבוטים פועלים בג'מיני, ונפתחים בחלון חדש.</p>
   {bots.map((b) => <BotCard bot={b} yearTitle={yearTitle(b.data.year)} />)}
 </BaseLayout>

@@ -1,0 +1,37 @@
+---
+import { render } from 'astro:content';
+import { Download } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { getSummaries, getYears, url } from '../lib/content';
+
+const years = await getYears();
+const summaries = await getSummaries();
+const ordered = years
+  .map((y) => ({ year: y, summary: summaries.find((s) => s.data.year === y.id) }))
+  .filter((x) => x.summary);
+const rendered = await Promise.all(ordered.map(async (x) => ({ ...x, Content: (await render(x.summary!)).Content })));
+---
+<BaseLayout title="סיכום שנתי" description="עבודת הסיכום השנתית של קהילת בקשב לקצב">
+  <PageHero title="סיכום שנתי" subtitle="עבודת הסיכום של הקהילה, שנה אחרי שנה" image="fern" />
+
+  {rendered.length ? (
+    rendered.map(({ year, summary, Content }) => (
+      <article class="card summary">
+        <p class="meta">{year.data.hebrewYear} · {year.data.title}</p>
+        <h2>{summary!.data.title}</h2>
+        {summary!.data.draft && <span class="draft-badge">טיוטה – לא מוצג באתר החי</span>}
+        <Content />
+        {summary!.data.file && (
+          <p><a class="btn" href={url(summary!.data.file)} download><Download size={18} aria-hidden="true" /> הורדת עבודת הסיכום</a></p>
+        )}
+      </article>
+    ))
+  ) : (
+    <p class="empty">עבודת הסיכום השנתית תתפרסם כאן בסוף השנה.</p>
+  )}
+</BaseLayout>
+
+<style>
+  .summary h2 { margin-top: 0.25rem; }
+</style>

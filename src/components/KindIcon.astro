@@ -1,0 +1,20 @@
+---
+import {
+  Footprints, MessageSquareQuote, Lightbulb, BookOpen, Link, Sparkles, GraduationCap, Shapes, Leaf,
+} from '@lucide/astro';
+
+interface Props { kind: string; size?: number; }
+const { kind, size = 18 } = Astro.props;
+const map: Record<string, typeof Leaf> = {
+  'מהלך פדגוגי': Footprints,
+  'דילמה': MessageSquareQuote,
+  'רעיון מהמליאה': Lightbulb,
+  'מאמר או מקור': BookOpen,
+  'קישור חיצוני': Link,
+  'תוצר מורה': Sparkles,
+  'שיעור': GraduationCap,
+  'כלי': Shapes,
+};
+const Icon = map[kind] ?? Leaf;
+---
+<Icon size={size} aria-hidden="true" />

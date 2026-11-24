@@ -1,13 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import { getYears, getMeetings, url } from '../lib/content';
 
 const years = (await getYears()).filter((y) => !y.data.current);
 const counts = await Promise.all(years.map(async (y) => (await getMeetings(y.id)).length));
 ---
 <BaseLayout title="ארכיון" description="החומרים של השנים הקודמות במהלך השקפה">
-  <h1>ארכיון</h1>
-  <p>מה שנעשה בשנים הקודמות של השקפה, באותו מבנה של שנה ומפגשים.</p>
+  <PageHero title="ארכיון" subtitle="מה שנעשה בשנים הקודמות של השקפה" image="bench" />
   {years.length ? (
     <ul class="plain">
       {years.map((y, i) => (

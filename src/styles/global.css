@@ -72,6 +72,53 @@ img { max-width: 100%; height: auto; border-radius: var(--radius); }
 
 .meta { color: var(--muted); font-size: 0.925rem; }
 
+.with-icon { display: flex; gap: 0.85rem; align-items: flex-start; }
+.with-icon > div { flex: 1; min-width: 0; }
+.card-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.date-chip {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  line-height: 1.1;
+}
+.date-day { font-size: 1.35rem; font-weight: 700; }
+.date-month { font-size: 0.75rem; }
+
+.section-head { display: flex; align-items: center; gap: 0.5rem; }
+.section-head svg { color: var(--accent); flex: none; }
+
+.page-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+.page-hero img {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 18px;
+  flex: none;
+}
+.page-hero h1 { margin: 0; }
+.page-hero p { margin: 0.2rem 0 0; color: var(--muted); }
+
 .tag {
   display: inline-block;
   background: var(--accent-soft);

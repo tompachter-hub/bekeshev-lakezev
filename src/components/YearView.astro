@@ -1,13 +1,26 @@
 ---
+import { ScrollText } from '@lucide/astro';
 import MeetingCard from './MeetingCard.astro';
-import { getMeetings, type Year } from '../lib/content';
+import PageHero from './PageHero.astro';
+import { getMeetings, getSummaries, url, type Year } from '../lib/content';
 interface Props { year: Year; }
 const { year } = Astro.props;
 const meetings = (await getMeetings(year.id)).reverse(); // מהראשון לאחרון
+const summary = (await getSummaries()).find((s) => s.data.year === year.id);
 ---
-<p class="meta">{year.data.hebrewYear}{year.data.current ? ' · השנה' : ''}</p>
-<h1>{year.data.title}</h1>
+<PageHero
+  title={year.data.title}
+  subtitle={`${year.data.hebrewYear}${year.data.current ? ' · השנה' : ''}`}
+  image={year.data.current ? 'snail' : 'roots'}
+/>
 {year.data.description && <p>{year.data.description}</p>}
+
+{summary && (
+  <p class="highlight section-head">
+    <ScrollText size={20} aria-hidden="true" />
+    <a href={url('summary')}>{summary.data.title}</a>
+  </p>
+)}
 
 <h2>המפגשים</h2>
 {meetings.length ? (

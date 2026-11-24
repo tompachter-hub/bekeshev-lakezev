@@ -81,4 +81,33 @@ const bots = defineCollection({
   }),
 });
 
-export const collections = { years, meetings, items, bots };
+// לוח מפגשים – קובץ אחד לכל שנה. קבצים שמתחילים בקו תחתון (_) הם תבניות ולא מוצגים.
+const schedule = defineCollection({
+  loader: glob({ pattern: '[^_]*.md', base: './src/content/schedule' }),
+  schema: z.object({
+    year: z.string(),
+    sessions: z
+      .array(
+        z.object({
+          date: z.coerce.date(),
+          time: z.string().optional(), // למשל "14:00–15:30"
+          place: z.string().optional(),
+          topic: z.string().optional(),
+        }),
+      )
+      .default([]),
+  }),
+});
+
+// עבודת הסיכום השנתית – קובץ אחד לכל שנה
+const summaries = defineCollection({
+  loader: glob({ pattern: '[^_]*.md', base: './src/content/summaries' }),
+  schema: z.object({
+    year: z.string(),
+    title: z.string(),
+    file: z.string().optional(), // קובץ להורדה, למשל media/summary-tashpaz.pdf
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { years, meetings, items, bots, schedule, summaries };

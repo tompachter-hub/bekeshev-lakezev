@@ -1,13 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ItemCard from '../components/ItemCard.astro';
+import PageHero from '../components/PageHero.astro';
 import { getItems } from '../lib/content';
 
 const articles = (await getItems()).filter((i) => i.data.kind === 'מאמר או מקור');
 ---
 <BaseLayout title="ספריית העשרה" description="מאמרים ומקורות שכדאי להכיר">
-  <h1>ספריית העשרה</h1>
-  <p>מאמרים ומקורות שעלו במפגשים. ליד כל אחד כתוב למה כדאי לקרוא אותו.</p>
+  <PageHero title="ספריית העשרה" subtitle="מאמרים ומקורות שעלו במפגשים" image="window" />
+  <p>ליד כל מקור כתוב למה כדאי לקרוא אותו.</p>
   {articles.length ? (
     articles.map((a) => <ItemCard item={a} />)
   ) : (
