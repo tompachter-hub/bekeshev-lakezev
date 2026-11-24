@@ -41,14 +41,14 @@ const isActive = (href: string) =>
     <meta property="og:locale" content="he_IL" />
     <meta property="og:image" content={new URL(url('media/nature/stream.webp'), Astro.site).href} />
     <meta name="theme-color" content="#faf6ee" />
-    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={url('favicon.svg?v=clef')} type="image/svg+xml" />
   </head>
   <body>
     <a class="skip-link" href="#main">דלג לתוכן</a>
     <header class="site-header">
       <div class="container brand">
         <a class="site-name" href={url('')}>
-          <img src={url('favicon.svg')} alt="" width="28" height="28" />
+          <img src={url('favicon.svg?v=clef')} alt="" width="28" height="28" />
           <span>{site.name}</span>
         </a>
         <p class="site-sub">קהילת מורות במהלך {site.program} · {site.school}, {site.city}</p>
